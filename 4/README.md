@@ -78,23 +78,33 @@ In particular, at:
 Upon commenting that code, the error disappears. The code creates a store and modifies it, but it's not clear
 what's the use of storing keys identical to their values up to `NumIterations`.
 
-Additionally, judging from this bug https://github.com/cosmos/cosmos-sdk/issues/20746 it seems like there
-may be a problem with the underlying KVStore implementation, which is my last hypothesis.
 
-I tried upgrading the Cosmos SDK version, but ended up in a path rename hell:
+Regardless, the problem seems to come from the fact that map iterations in Go are not deterministic (https://go.dev/blog/maps#iteration-order ). 
+Which will cause different validator nodes to run `store.Set(key, value)` in a different order (resulting in different blocks).
+
+
+If we get rid of the map and modify that code into the equivalent (and more efficient):
 
 ```
- go: brk-cosmossdk/app imports
-	github.com/cosmos/cosmos-sdk/store/types: github.com/cosmos/cosmos-sdk/store@v1.1.2: parsing go.mod:
-	module declares its path as: cosmossdk.io/store
-	        but was required as: github.com/cosmos/cosmos-sdk/store
+	for i := 0; i < types.NumIterations; i++ {
+		store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(MyStoreKey))
+
+		key := []byte(strconv.Itoa(i))
+		if store.Has(key) {
+			return nil, fmt.Errorf("key already exists in store")
+		}
+
+		value := []byte(strconv.Itoa(i))
+		if len(value) == 0 {
+			return nil, fmt.Errorf("value cannot be 0 length")
+		}
+
+		store.Set(key, value)
+	}
+
 ```
 
-I left it there due to lack of time, but there may be a streamlined way to upgrade the version.
-
-My next step would be to launch a debugger and see what part of the implementation is actually causing the problem.
-However, I left it because I am using a remote machine (the example didn't work on my local Mac machine and only on Linux),
-requiring a more hairy setup.
+Then the CLI command doesn't cause the chain to halt.
 
 
 
