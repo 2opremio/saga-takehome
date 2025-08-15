@@ -85,7 +85,7 @@ Which will cause different validator nodes to run `store.Set(key, value)` in a d
 
 If we get rid of the map and modify that code into the equivalent (and more efficient):
 
-```
+```go
 	for i := 0; i < types.NumIterations; i++ {
 		store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte(MyStoreKey))
 
