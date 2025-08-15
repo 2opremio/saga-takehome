@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "github.com/2opremio/sagatakehome/2/proto";
+
+package counter;
+
+service Counter {
+  rpc Bump (BumpRequest) returns (BumpReply) {}
+}
+
+message BumpRequest {
+  uint64 by = 1;
+}
+
+message BumpReply {
+  uint64 counter = 1;
+}
