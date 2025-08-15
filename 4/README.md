@@ -1,6 +1,6 @@
 # Code Debug Challenge
 
-What I can see is that a new message (and associated CLI command was half-added):
+What I can see is that a new message called `MsgBrkchain` (and associated CLI command) was half-added:
 
 ```
 fons@autoamp:~/downloaded/brk-cosmossdk$ git status
