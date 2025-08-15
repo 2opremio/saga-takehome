@@ -1,8 +1,8 @@
 # Coding and Optimization Challenge
 
-Instead of coding an independent client/server `main()` program, I created benchmarks for different implementation alternatives.
+Instead of coding an independent client/server `main()` function, I created benchmarks for different implementation alternatives.
 
-The Core part of the server itself is a simple in-memory using Golang's `atomic` library.
+The core part of the server itself is a simple in-memory counter using Golang's `atomic` library.
 This allows for maximum concurrency without any lock contention.
 
 On top of that I created benchmarks (see `main_test.go` with different transports and serialization formats)
