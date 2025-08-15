@@ -163,6 +163,7 @@ func TestGRPC(t *testing.T) {
 }
 
 func runBench(b *testing.B, f func()) {
+	b.ReportAllocs()
 	totalOps := 0
 	start := time.Now()
 	for b.Loop() {
@@ -176,6 +177,7 @@ func runBench(b *testing.B, f func()) {
 }
 
 func runParallelBench(b *testing.B, cfg client.Config, f func(c *client.Client)) {
+	b.ReportAllocs()
 	var totalOps atomic.Uint64
 	start := time.Now()
 	b.RunParallel(func(pb *testing.PB) {
@@ -323,23 +325,32 @@ func BenchmarkFastHTTP_NoKeepAlive(b *testing.B) {
 		require.NoError(b, err)
 		wg.Wait()
 	}()
-	c, err := client.New(client.Config{
+	cfg := client.Config{
 		Endpoint:                 fmt.Sprintf("http://localhost:%d", port),
 		Approach:                 config.FastHTTPApproach,
 		DisableFastHTTPKeepAlive: true,
 		FastHTTPClient: &fasthttp.Client{
-			MaxConnsPerHost: 1000,
+			MaxConnsPerHost: 50,
 		},
-	})
+	}
+	c, err := client.New(cfg)
 	require.NoError(b, err)
 
-	// Give enough time for the server to start
-	time.Sleep(time.Second)
-	runBench(b, func() {
-		_, err := c.BumpCounter(context.Background(), 1)
-		if err != nil {
-			b.Fatal(err)
-		}
+	b.Run("Sequential", func(b *testing.B) {
+		runBench(b, func() {
+			_, err := c.BumpCounter(context.Background(), 1)
+			if err != nil {
+				b.Fatal(err)
+			}
+		})
+	})
+	b.Run("Parallel", func(b *testing.B) {
+		runParallelBench(b, cfg, func(c *client.Client) {
+			_, err := c.BumpCounter(context.Background(), 1)
+			if err != nil {
+				b.Fatal(err)
+			}
+		})
 	})
 }
 
@@ -348,7 +359,7 @@ func BenchmarkFastHTTP(b *testing.B) {
 	wg.Add(1)
 	s := &fasthttp.Server{
 		Handler:       server.NewHTTPStringHandler().HandleFastHTTP,
-		MaxConnsPerIP: 1000,
+		MaxConnsPerIP: 50,
 	}
 	ln, err := net.Listen("tcp4", "localhost:0")
 	require.NoError(b, err)
@@ -368,7 +379,7 @@ func BenchmarkFastHTTP(b *testing.B) {
 		Endpoint: fmt.Sprintf("http://localhost:%d", port),
 		Approach: config.FastHTTPApproach,
 		FastHTTPClient: &fasthttp.Client{
-			MaxConnsPerHost: 1000,
+			MaxConnsPerHost: 50,
 		},
 	}
 	c, err := client.New(cfg)
@@ -420,7 +431,7 @@ func BenchmarkFastHTTP_TLS_NoKeepAlive(b *testing.B) {
 		Approach: config.FastHTTPApproach,
 		FastHTTPClient: &fasthttp.Client{
 			TLSConfig:       &tls.Config{InsecureSkipVerify: true},
-			MaxConnsPerHost: 1000,
+			MaxConnsPerHost: 50,
 		},
 		DisableFastHTTPKeepAlive: true,
 	})
@@ -462,7 +473,7 @@ func BenchmarkFastHTTP_TLS(b *testing.B) {
 		Approach: config.FastHTTPApproach,
 		FastHTTPClient: &fasthttp.Client{
 			TLSConfig:       &tls.Config{InsecureSkipVerify: true},
-			MaxConnsPerHost: 1000,
+			MaxConnsPerHost: 50,
 		},
 	})
 	require.NoError(b, err)
