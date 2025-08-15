@@ -75,13 +75,13 @@ In particular, at:
 	}
 ```
 
-Upon commenting that code, the error disappears.
+Upon commenting that code, the error disappears. The code creates a store and modifies it but it's not clear
+what's the use of storing keys identical to their values up to `NumIterations`
 
 Judging by the TODOs left at `x/brkcosmossdk/keeper/msg_server_brkchain.go` and `x/brkcosmossdk/simulation/brkchain.go`
 it simply seems like the implementation of the new message is not finished but it's not clear what the correct 
 implementation should do.
 
-TODO: figure out what is the intended behavior.
 
 
 
