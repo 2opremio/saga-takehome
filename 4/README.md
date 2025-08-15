@@ -75,13 +75,26 @@ In particular, at:
 	}
 ```
 
-Upon commenting that code, the error disappears. The code creates a store and modifies it but it's not clear
-what's the use of storing keys identical to their values up to `NumIterations`
+Upon commenting that code, the error disappears. The code creates a store and modifies it, but it's not clear
+what's the use of storing keys identical to their values up to `NumIterations`.
 
-Judging by the TODOs left at `x/brkcosmossdk/keeper/msg_server_brkchain.go` and `x/brkcosmossdk/simulation/brkchain.go`
-it simply seems like the implementation of the new message is not finished but it's not clear what the correct 
-implementation should do.
+Additionally, judging from this bug https://github.com/cosmos/cosmos-sdk/issues/20746 it seems like there
+may be a problem with the underlying KVStore implementation, which is my last hypothesis.
 
+I tried upgrading the Cosmos SDK version, but ended up in a path rename hell:
+
+```
+ go: brk-cosmossdk/app imports
+	github.com/cosmos/cosmos-sdk/store/types: github.com/cosmos/cosmos-sdk/store@v1.1.2: parsing go.mod:
+	module declares its path as: cosmossdk.io/store
+	        but was required as: github.com/cosmos/cosmos-sdk/store
+```
+
+I left it there due to lack of time, but there may be a streamlined way to upgrade the version.
+
+My next step would be to launch a debugger and see what part of the implementation is actually causing the problem.
+However, I left it because I am using a remote machine (the example didn't work on my local Mac machine and only on Linux),
+requiring a more hairy setup.
 
 
 
