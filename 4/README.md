@@ -51,7 +51,7 @@ After inspecting the code thoroughly, the problem seems to lie at `func (k msgSe
 
 In particular, at:
 
-```
+```go
 	for i := 0; i < types.NumIterations; i++ {
 		mymap[i] = i
 	}
