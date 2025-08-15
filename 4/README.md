@@ -79,8 +79,8 @@ Upon commenting that code, the error disappears. The code creates a store and mo
 what's the use of storing keys identical to their values up to `NumIterations`.
 
 
-Regardless, the problem seems to come from the fact that map iterations in Go are not deterministic (https://go.dev/blog/maps#iteration-order ). 
-Which will cause different validator nodes to run `store.Set(key, value)` in a different order (resulting in different blocks).
+Regardless, the problem seems to come from the fact that map iterations in Go are not deterministic (https://go.dev/blog/maps#iteration-order ), 
+which will cause different validator nodes to run `store.Set(key, value)` in a different order (resulting in different blocks).
 
 
 If we get rid of the map and modify that code into the equivalent (and more efficient):
