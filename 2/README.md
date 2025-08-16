@@ -8,7 +8,7 @@ This allows for maximum concurrency without any lock contention.
 On top of that I created benchmarks (see `main_test.go` with different transports and serialization formats)
 trying to simulate different situations. The reason for this is that the challenge statement is too
 simplistic and doesn't indicate where the server would be used 
-(Internally, in a backend system without encryption? With many requests from a single client)
+(Internally, in a backend system without encryption? With many requests from a single client?)
 
 Here are the benchmarks I created:
 
