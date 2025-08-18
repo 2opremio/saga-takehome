@@ -39,7 +39,7 @@ Here are the benchmarks I created:
     * Without TLS (I just didn't have time for more)
 
 
-The benchmarks where run with both the client and server running in the same machine (through the loopback interface)
+The benchmarks were ran with both the client and server running in the same machine (through the loopback interface)
 of my Mac Studio Ultra M1 using MacOS 10.15.6 .
 
 If had more time, I would had tested clients and servers in separate machines since the loopback interface is known to
